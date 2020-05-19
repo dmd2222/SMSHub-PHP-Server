@@ -6,5 +6,6 @@ An adaption of the project https://github.com/juancrescente/SMSHub aditional php
 May you can support the development? <br>
  <a href="https://unze4u.de/UShort/s.php?i=54" target="_blank">https://www.patreon.com/marcoschwald</a> 
  <br>
+  <br>
  Do you want a notification, when it is finished? <br>
  Press the star
