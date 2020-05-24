@@ -7,7 +7,8 @@ VB --SENDS JSON --> PHP-Server --PROVIDES JSON-->APP  --SENDS SMS--> ...
 -- GET SMS--> APP --SENDS JSON--> PHP-Server --works with it-->
 <br>
 
-
+# API?
+You can use the API of the PHP-Server for serveral projects.
 
 # serveral Parts of the project
 # VB
