@@ -72,7 +72,9 @@ if(config_admin_email_if_error == 1){
 function secure_db(){
 try {
     $fn = './main.db';
-    chmod($fn, 0600);
+    if(fileperms($fn)<>0600){
+             chmod($fn, 0600);
+    }
 } catch (Exception $e) {
     echo 'Exception abgefangen: ',  $e->getMessage(), "\n";
     send_admin_an_email("WARNING: The program was not able to secure the db. Set main.db unreadable, see chmod!");
@@ -376,7 +378,8 @@ foreach(config_device_id_secret as $singel_device_id_secret) {
                             // query example, one row
                             $sms_db_info = $db->queryRow( sprintf( "SELECT * FROM sms_to_send WHERE sms_status = 'NOTSEND' LIMIT 1" ) );
                             //echo  var_dump($sms_db_info);
-            
+                            
+                            unset($db);
                             //check result
                             if (isset($sms_db_info)){
                                 //Read sms
@@ -399,6 +402,8 @@ foreach(config_device_id_secret as $singel_device_id_secret) {
                                 
                                 echo  $json_string;
                             }
+
+
             
                         } catch (Exception $e) {
                             error_message('Exception', $e->getMessage(),'500');
@@ -412,7 +417,7 @@ foreach(config_device_id_secret as $singel_device_id_secret) {
                         error_message('Error action:SEND','Well deviceId or messageId  var is not set, in action RECEIVE','500');
                     }
 
-
+                    
         
         
                 break;
@@ -448,11 +453,20 @@ foreach(config_device_id_secret as $singel_device_id_secret) {
                         $db = new SQLiteDatabase("main.db");
                         
                         // insert some data to the database
-                        $db->query("UPDATE sms_to_send SET sms_status = '" . $status . "'  WHERE messageId = '" . $messageId . "';");
-    
+                        $sql_query = "UPDATE sms_to_send SET sms_status = '" . $status . "'  WHERE messageId = '" . $messageId . "';";
+                   
+                       $return_message =  $db->queryRow( $sql_query);
+                         //  var_dump( $return_message);
                         //Message back
-                        $json_string = json_encode(array('Info' => 'Well, I did it. I updated the status.', 'sms_status' => $status,'http_response' => '200'));
+                        unset($db);
+
+                        $json_string = json_encode(array('Info' => 'Well, I tried it. I hope I updated the status.', 'sms_status' => $status,'http_response' => '200'));
                         echo $json_string;
+
+
+                        
+
+
                     } catch (Exception $e) {
                         error_message('Exception', $e->getMessage(),'500');
                     }   
@@ -494,9 +508,15 @@ foreach(config_device_id_secret as $singel_device_id_secret) {
                             // insert some data to the database
                             $db->query("INSERT INTO sms_to_send VALUES(NULL,'" . strval($message) . "','" . strval($number) . "','" . strval($messageId) . "','NOTSEND');");
     
+                            unset($db);
+
                             //Message back
                             $json_string = json_encode(array('Info' => 'Well, I did it. I took the message and will try to send it by sms', 'message' => $message, 'number' => $number, 'messageId' => $messageId,'http_response' => '200'));
                             echo $json_string;
+
+                            
+
+
                         } catch (Exception $e) {
                             error_message('Exception', $e->getMessage(),'500');
                         } 
@@ -510,6 +530,29 @@ foreach(config_device_id_secret as $singel_device_id_secret) {
                 
              
                      break;
+                case "LOG":
+
+                    //SmSHub(the App on your phone) sends the log to the server
+                // now we work with it
+        
+             
+
+                //check if variables are set
+                if (isset($deviceId) == true ){
+                    $message ="";
+                    foreach ($_POST as $param_name => $param_val) {
+
+                        $message = $message . "Param:" . $param_name . " Value:" . $param_val;
+                    }
+                    write_message_to_file("SmSHub-App-LOG.txt",$message);
+                     //Message back
+                     $json_string = json_encode(array('Info' => 'Well, I did it. I started receive.', 'deviceID' => $deviceID,  'message' => $message,'http_response' => '200'));
+                     echo $json_string;
+                }else{
+                    error_message('Error action:RECEIVE','Well deviceId,number or message var is not set, in action RECEIVE','500');
+                }
+
+                break;
              default:
                 error_message('','Sorry, but I dont know this action command.','500');
                      die;
