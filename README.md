@@ -1,6 +1,14 @@
 # SMSHub-PHP-Server
 An adaption of the project https://github.com/juancrescente/SMSHub aditional php server software
 
+# functionality
+VB --SENDS JSON --> PHP-Server --PROVIDES JSON-->APP  --SENDS SMS--> ...
+<br>OR<br>
+-- GET SMS--> APP --SENDS JSON--> PHP-Server --works with it-->
+<br>
+
+
+
 # serveral Parts of the project
 # VB
 Well, I have developt a Visual Basic Application for this project:
